@@ -35,7 +35,12 @@
 
     <ItemGroup>
       <Folder Include="Company\" />
-      <Folder Include="IAM\" />
+      <Folder Include="IAM\Application\" />
+      <Folder Include="IAM\Domain\Model\Queries\" />
+      <Folder Include="IAM\Domain\Repositories\" />
+      <Folder Include="IAM\Domain\Services\" />
+      <Folder Include="IAM\Infrastructure\" />
+      <Folder Include="IAM\Interfaces\" />
       <Folder Include="Routes\" />
       <Folder Include="Stops\" />
     </ItemGroup>
