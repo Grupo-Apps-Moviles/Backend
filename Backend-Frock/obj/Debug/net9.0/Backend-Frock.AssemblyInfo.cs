@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Backend-Frock")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d00df9d2ff737b21dd6e0059fece6d8873131b83")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d15ffdde9442c20503b25c54250b0e08d4044b07")]
 [assembly: System.Reflection.AssemblyProductAttribute("Backend-Frock")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Backend-Frock")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
