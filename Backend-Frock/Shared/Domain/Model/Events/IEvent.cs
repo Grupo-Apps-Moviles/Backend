@@ -11,5 +11,4 @@ namespace Backend_Frock.Shared.Domain.Model.Events;
 /// </remarks> 
 public interface IEvent : INotification
 {
-    
 }

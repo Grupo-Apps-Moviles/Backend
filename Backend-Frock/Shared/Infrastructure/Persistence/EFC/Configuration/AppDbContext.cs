@@ -45,10 +45,10 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
 
         // Profiles Context
         // builder.ApplyProfilesConfiguration();
-        
+
         // IAM Context
         // builder.ApplyIamConfiguration();
-        
+
         // General Naming Convention for the database objects
         // builder.UseSnakeCaseNamingConvention();
     }
