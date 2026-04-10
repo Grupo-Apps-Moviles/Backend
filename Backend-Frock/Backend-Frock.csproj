@@ -35,7 +35,6 @@
 
     <ItemGroup>
       <Folder Include="Company\" />
-      <Folder Include="IAM\Application\" />
       <Folder Include="IAM\Infrastructure\" />
       <Folder Include="IAM\Interfaces\" />
       <Folder Include="Routes\" />
