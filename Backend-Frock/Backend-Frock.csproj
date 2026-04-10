@@ -37,7 +37,6 @@
       <Folder Include="Company\" />
       <Folder Include="IAM\" />
       <Folder Include="Routes\" />
-      <Folder Include="Shared\Infrastructure\Persistence\EFC\Repositories\" />
       <Folder Include="Stops\" />
     </ItemGroup>
 
