@@ -9,6 +9,7 @@
 
     <ItemGroup>
         <!-- Dependency Injection related packages -->
+        <PackageReference Include="CloudinaryDotNet" Version="1.28.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.10"/>
         <!-- EntityFrameworkCore Database Persistence related packages -->
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.10"/>
@@ -31,10 +32,6 @@
         <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.14.0"/>
         <!-- Mediator pattern related packages -->
         <PackageReference Include="Cortex.Mediator" Version="2.1.0"/>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Company\" />
     </ItemGroup>
 
 </Project>

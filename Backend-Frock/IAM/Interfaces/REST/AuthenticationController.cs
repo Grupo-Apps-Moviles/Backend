@@ -12,7 +12,7 @@ namespace Backend_Frock.IAM.Interfaces.REST;
 [ApiController]
 [Route("api/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
-[SwaggerTag("Available Authentication endpoints")]
+[SwaggerTag("Authentication available for end users (Passengers and carriers)")]
 public class AuthenticationController(IUserCommandService userCommandService) : ControllerBase
 {
     /**
