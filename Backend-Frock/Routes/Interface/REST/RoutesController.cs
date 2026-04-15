@@ -16,7 +16,7 @@ namespace Backend_Frock.Routes.Interface.REST
     [ApiController]
     [Route("api/[controller]")]
     [Produces(MediaTypeNames.Application.Json)]
-    [Tags("Routes")]
+    [SwaggerTag("Endpoints for routes")]
     public class RoutesController(IRouteCommandService routeCommandService, IRouteQueryService routeQueryService) : ControllerBase
     {
         /// <summary>

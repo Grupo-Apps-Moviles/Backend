@@ -13,7 +13,7 @@ namespace Backend_Frock.IAM.Interfaces.REST;
 [ApiController]
 [Route("api/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
-[SwaggerTag("Available User endpoints")]
+[SwaggerTag("Endpoints for target segments")]
 public class UsersController(IUserQueryService userQueryService) : ControllerBase
 {
     /**
