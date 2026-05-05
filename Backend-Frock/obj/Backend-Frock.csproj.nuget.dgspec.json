@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\shars\\Backend-Frock\\Backend-Frock\\Backend-Frock.csproj": {}
+    "D:\\software\\Backend\\Backend-Frock\\Backend-Frock.csproj": {}
   },
   "projects": {
-    "D:\\shars\\Backend-Frock\\Backend-Frock\\Backend-Frock.csproj": {
+    "D:\\software\\Backend\\Backend-Frock\\Backend-Frock.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\shars\\Backend-Frock\\Backend-Frock\\Backend-Frock.csproj",
+        "projectUniqueName": "D:\\software\\Backend\\Backend-Frock\\Backend-Frock.csproj",
         "projectName": "Backend-Frock",
-        "projectPath": "D:\\shars\\Backend-Frock\\Backend-Frock\\Backend-Frock.csproj",
+        "projectPath": "D:\\software\\Backend\\Backend-Frock\\Backend-Frock.csproj",
         "packagesPath": "C:\\Users\\USUARIO\\.nuget\\packages\\",
-        "outputPath": "D:\\shars\\Backend-Frock\\Backend-Frock\\obj\\",
+        "outputPath": "D:\\software\\Backend\\Backend-Frock\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\USUARIO\\AppData\\Roaming\\NuGet\\NuGet.Config"

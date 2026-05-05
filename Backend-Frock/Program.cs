@@ -252,3 +252,5 @@ app.UseAuthorization(); // Authorization de ASP.NET Core
 app.MapControllers();
 
 app.Run();
+
+// Desarrollado por grupo de VS
