@@ -4,6 +4,7 @@
     (
         int id, // The unique identifier for the stop
         string name, // The name of the stop
+        string GoogleMapsUrl,
         string? image_url,
         string address,
         int fk_company_id, // The foreign key to the company that owns the stop
