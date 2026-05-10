@@ -69,7 +69,7 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v1",
         new OpenApiInfo
         {
-            Title = "Frock Backend Develop",
+            Title = "ViaCore Backend Develop",
             Version = "v1",
             Description = "Frock Backend API",
             TermsOfService = new Uri("https://acme-learning.com/tos"),
@@ -235,8 +235,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Configure the HTTP request pipeline.
-app.UseSwagger(c => { c.OpenApiVersion = Microsoft.OpenApi.OpenApiSpecVersion.OpenApi2_0; });
+app.UseSwagger();
 
 app.UseSwaggerUI(c =>
 {

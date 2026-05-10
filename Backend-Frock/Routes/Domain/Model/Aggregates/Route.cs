@@ -39,26 +39,22 @@ namespace Backend_Frock.Routes.Domain.Model.Aggregates
                 this.AddSchedule(schedule.StartTime, schedule.EndTime, schedule.DayOfWeek, schedule.Enabled);
             }
         }
-        public RouteAggregate(UpdateRouteCommand cm)
+        public void UpdateInformation(UpdateRouteCommand cm)
         {
             this.Price = cm.Price;
             this.Duration = cm.Duration;
             this.Frequency = cm.Frequency;
+            this.Stops.Clear();
             foreach (var stopId in cm.StopsIds)
             {
-                // Assuming RoutesStops is a value object that holds the stop ID
-                var routeStop = new RoutesStops(stopId);
-                // Here you would typically add this to a collection of stops in the Route aggregate
-                this.Stops.Add(routeStop);
+                this.Stops.Add(new RoutesStops(stopId));
             }
+
+            this.Schedules.Clear();
             foreach (var schedule in cm.Schedules)
             {
                 this.AddSchedule(schedule.StartTime, schedule.EndTime, schedule.DayOfWeek, schedule.Enabled);
             }
-        }
-        public RouteAggregate(DeleteRouteCommand cm)
-        {
-            this.Id = cm.idRoute;
         }
     }
 }

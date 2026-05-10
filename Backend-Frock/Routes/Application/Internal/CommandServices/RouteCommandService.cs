@@ -24,24 +24,26 @@ namespace Backend_Frock.Routes.Application.Internal.CommandServices
                 return null; // Signal failure to the controller
             }
         }
-        public async Task<RouteAggregate?> Handle(int idRoute,UpdateRouteCommand command)
+        public async Task<RouteAggregate?> Handle(int idRoute, UpdateRouteCommand command)
         {
             Console.WriteLine($"Updating route with ID: {idRoute}");
+            
             var route = await routeRepository.FindByIdAsync(idRoute);
             if (route == null)
             {
                 return null; // Route not found
             }
-            var updatedRoute = new RouteAggregate(command);
+            route.UpdateInformation(command);
+
             try
             {
-                routeRepository.Update(updatedRoute);
+                routeRepository.Update(route); 
                 await unitOfWork.CompleteAsync();
-                return updatedRoute;
+                return route;
             }
             catch (Exception e)
             {
-                // logger?.LogError(e, "Error updating route with ID {RouteId}.", command.IdRoute);
+                // logger?.LogError(e, "Error updating route with ID {RouteId}.", idRoute);
                 return null; // Signal failure to the controller
             }
         }
