@@ -252,3 +252,11 @@ app.MapControllers();
 app.Run();
 
 // Desarrollado por grupo de VS
+
+// "ConnectionStrings": { "DefaultConnection": "server=localhost;user=root;password=1234;database=frockdb" },
+
+/*
+ * "ConnectionStrings": {
+    "DefaultConnection": "server=interchange.proxy.rlwy.net;port=40175;database=railway;user=root;password=cygYyJTTgdGQLhoKyqgPbfAeguYxyNye"
+  },
+ */
