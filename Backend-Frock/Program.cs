@@ -212,16 +212,16 @@ builder.Services.AddHttpClient<IGeoImportService, GeoImportService>(client =>
 // Datos iniciales fijos de datos geográficos
 builder.Services.AddScoped<GeographicDataSeeder>();
 
-// CORS - Configuración para permitir todo
+// CORS - Configuración para permitir 
 
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+        policy.AllowAnyOrigin() // Permite cualquier puerto y cualquier IP
             .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
+            .AllowAnyMethod();
+        // IMPORTANTE: No uses .AllowCredentials() aquí, o el navegador dará error de seguridad.
     });
 });
 
