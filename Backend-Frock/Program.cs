@@ -212,16 +212,13 @@ builder.Services.AddHttpClient<IGeoImportService, GeoImportService>(client =>
 // Datos iniciales fijos de datos geográficos
 builder.Services.AddScoped<GeographicDataSeeder>();
 
+// CORS - Configuración para permitir todo
 
-//CORS
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins(
-                "http://localhost:5173",
-                "https://frock-frontend.vercel.app"
-            )
+        policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
@@ -256,14 +253,12 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Configure the HTTP request pipeline.
-app.UseSwagger(c => { c.OpenApiVersion = Microsoft.OpenApi.OpenApiSpecVersion.OpenApi2_0; });
-
+// Mueve estas líneas fuera de cualquier bloque "if (app.Environment.IsDevelopment())"
+app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
-    c.RoutePrefix = string.Empty; // Opcional: para que Swagger sea la p�gina ra�z
-    c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+    c.RoutePrefix = string.Empty; // Esto hace que Swagger sea la página principal en Railway
 });
 
 //app.UseHttpsRedirection();
@@ -277,9 +272,3 @@ app.Run();
 // Desarrollado por grupo de VS
 
 // "ConnectionStrings": { "DefaultConnection": "server=localhost;user=root;password=1234;database=frockdb" },
-
-/*
- * "ConnectionStrings": {
-    "DefaultConnection": "server=interchange.proxy.rlwy.net;port=40175;database=railway;user=root;password=cygYyJTTgdGQLhoKyqgPbfAeguYxyNye"
-  },
- */
