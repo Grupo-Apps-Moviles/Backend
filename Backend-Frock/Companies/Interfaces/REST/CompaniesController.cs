@@ -8,12 +8,14 @@ using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net.Mime;
 
+
 namespace Backend_Frock.Companies.Interfaces.REST
 {
     [ApiController]
     [Route("api/[controller]")]
     [Produces(MediaTypeNames.Application.Json)]
     [Tags("Companies")]
+    [SwaggerTag("Endpoints for manager Companies")]
     public class CompaniesController(
         ICompanyCommandService commandService, 
         ICompanyQueryService queryService,

@@ -69,13 +69,13 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v1",
         new OpenApiInfo
         {
-            Title = "Frock Backend Develop",
+            Title = "Viacore Backend Develop",
             Version = "v1",
-            Description = "Frock Backend API",
-            TermsOfService = new Uri("https://acme-learning.com/tos"),
+            Description = "Viacore Backend API",
+            TermsOfService = new Uri("https://github.com/velardesoft/"),
             Contact = new OpenApiContact
             {
-                Name = "Grupo de estudiantes de la universidad peruana de Ciencias Aplicadas",
+                Name = "Grupo de estudiantes de la universidad peruana de Ciencias Aplicadas del curso de Aplicaciones Para Dispositivos Móviles",
                 Email = "codydevops@gmail.com"
             },
             License = new OpenApiLicense
@@ -196,9 +196,7 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(
                 "http://localhost:5173",
-                "https://frock-frontend.vercel.app",
-                "https://frock-frontend-git-main-yassers.vercel.app",
-                "https://frock-backend-monolito.onrender.com"
+                "https://frock-frontend.vercel.app"
             )
             .AllowAnyHeader()
             .AllowAnyMethod()

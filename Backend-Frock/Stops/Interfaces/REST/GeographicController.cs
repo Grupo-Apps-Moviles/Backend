@@ -16,6 +16,7 @@ namespace Backend_Frock.Stops.Interfaces.REST
     [Route("api/[controller]")]
     [Produces(MediaTypeNames.Application.Json)]
     [Tags("Geographic")]
+    [SwaggerTag("Endpoints for manager Geographic (Región - Provincia - Distrito)")]
     public class GeographicController(
         IRegionCommandService regionCommandService, IRegionQueryService regionQueryService,
         IProvinceCommandService provinceCommandService, IProvinceQueryService provinceQueryService,

@@ -20,6 +20,7 @@ namespace Backend_Frock.Stops.Interfaces.REST
     [Route("api/[controller]")]
     [Produces(MediaTypeNames.Application.Json)]
     [Tags("Stops")]
+    [SwaggerTag("Endpoints for manager Stop")]
     public class StopsController(
         IStopCommandService stopCommandService, 
         IStopQueryService stopQueryService,
