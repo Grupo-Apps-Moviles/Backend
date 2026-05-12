@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "QqVlgUTMs2o=",
+  "dgSpecHash": "SQTBxqrQxjg=",
   "success": true,
-  "projectFilePath": "D:\\movil\\Backend\\Backend-Frock\\Backend-Frock.csproj",
+  "projectFilePath": "D:\\movil\\Backend1\\Backend-Frock\\Backend-Frock.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\USUARIO\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\USUARIO\\.nuget\\packages\\bouncycastle.cryptography\\2.6.2\\bouncycastle.cryptography.2.6.2.nupkg.sha512",
