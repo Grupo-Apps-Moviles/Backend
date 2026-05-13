@@ -48,6 +48,13 @@ using Backend_Frock.Stops.Domain.Services.Geographic;
 using Backend_Frock.Stops.Infrastructure.Repositories;
 using Backend_Frock.Stops.Infrastructure.Repositories.Geographic;
 using Backend_Frock.Stops.Infrastructure.Seeding;
+using Backend_Frock.Suscriptions.Application.Internal.CommandServices;
+using Backend_Frock.Suscriptions.Application.Internal.QueryServices;
+using Backend_Frock.Suscriptions.Domain.Repositories;
+using Backend_Frock.Suscriptions.Infrastructure.ExternalServices;
+
+using Backend_Frock.Suscriptions.Infrastructure.Persistence;
+
 
 // Microsoft
 using Microsoft.EntityFrameworkCore;
@@ -56,6 +63,13 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+// Subscriptions Bounded Context Injection
+builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+builder.Services.AddScoped<SubscriptionCommandService>();
+builder.Services.AddScoped<SubscriptionQueryService>();
+builder.Services.AddHttpClient<PaypalService>();
+
 // Configure Lower Case URLs
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
