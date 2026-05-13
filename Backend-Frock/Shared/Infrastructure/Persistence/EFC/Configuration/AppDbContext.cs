@@ -5,6 +5,7 @@ using Backend_Frock.Routes.Domain.Model.Entities;
 using Backend_Frock.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
 using Backend_Frock.Stops.Domain.Model.Aggregates;
 using Backend_Frock.Stops.Domain.Model.Aggregates.Geographic;
+using Backend_Frock.Subscriptions.Domain.Model.Aggregates;
 using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,6 +28,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<RouteAggregate> Routes { get; set; }
     public DbSet<RoutesStops> RouteStops { get; set; }
     public DbSet<Schedule> Schedules { get; set; }
+    public DbSet<Subscription> Subscriptions { get; set; }
     
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
@@ -110,6 +112,23 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
 
+        // SUBSCRIPTION
+        builder.Entity<Subscription>(b =>
+        {
+            b.ToTable("subscriptions");
+            b.HasKey(s => s.Id);
+            b.Property(s => s.Id).IsRequired().ValueGeneratedOnAdd();
+            b.Property(s => s.DriverId).IsRequired();
+            b.Property(s => s.PaypalSubscriptionId).HasMaxLength(100).IsRequired();
+            b.Property(s => s.PaypalPlanId).HasMaxLength(100).IsRequired();
+            b.Property(s => s.Status).HasConversion<string>().IsRequired();
+            b.Property(s => s.StartDate).IsRequired();
+            b.Property(s => s.EndDate).IsRequired();
+            b.Property(s => s.CreatedAt).IsRequired();
+            b.Property(s => s.UpdatedAt).IsRequired();
+            b.Ignore(s => s.IsActive); // computed, no va a la DB
+        });
+        
         // ROUTE
         builder.Entity<RouteAggregate>(b =>
             {
