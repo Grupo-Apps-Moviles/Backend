@@ -49,6 +49,15 @@ using Backend_Frock.Stops.Infrastructure.Repositories;
 using Backend_Frock.Stops.Infrastructure.Repositories.Geographic;
 using Backend_Frock.Stops.Infrastructure.Seeding;
 
+// Subscriptions
+using Backend_Frock.Subscriptions.Application.Internal.CommandServices;
+using Backend_Frock.Subscriptions.Application.Internal.QueryServices;
+using Backend_Frock.Subscriptions.Domain.Model.Repository;
+using Backend_Frock.Subscriptions.Domain.Service;
+using Backend_Frock.Subscriptions.Infrastructure.Paypal;
+using Backend_Frock.Subscriptions.Infrastructure.Repositories;
+using Backend_Frock.Subscriptions.Infrastructure.Services;
+
 // Microsoft
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -203,6 +212,14 @@ builder.Services.AddScoped<IRouteRepository, RouteRepository>();
 builder.Services.AddScoped<IRouteCommandService, RouteCommandService>();
 builder.Services.AddScoped<IRouteQueryService, RouteQueryService>();
 
+// Subscriptions
+builder.Services.Configure<PaypalOptions>(builder.Configuration.GetSection(PaypalOptions.SectionName));
+builder.Services.AddHttpClient<PaypalService>();
+builder.Services.AddScoped<IPaypalService, PaypalService>();
+builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+builder.Services.AddScoped<ISubscriptionCommandService, SubscriptionCommandService>();
+builder.Services.AddScoped<ISubscriptionQueryService, SubscriptionQueryService>();
+
 //GEOSERVICE
 builder.Services.AddHttpClient<IGeoImportService, GeoImportService>(client =>
 {
@@ -253,8 +270,10 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Mueve estas líneas fuera de cualquier bloque "if (app.Environment.IsDevelopment())"
+
+// Configure the HTTP request pipeline.
 app.UseSwagger();
+
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
@@ -264,6 +283,7 @@ app.UseSwaggerUI(c =>
 //app.UseHttpsRedirection();
 app.UseRouting(); // Si no está implícito
 app.UseRequestAuthorization(); // Tu middleware personalizado
+app.UseAuthentication();
 app.UseAuthorization(); // Authorization de ASP.NET Core
 app.MapControllers();
 
