@@ -1,5 +1,6 @@
 ﻿using Backend_Frock.Companies.Domain.Model.Aggregates;
 using Backend_Frock.IAM.Domain.Model.Aggregates;
+using Backend_Frock.Reservations.Domain.Model.Aggregates;
 using Backend_Frock.Routes.Domain.Model.Aggregates;
 using Backend_Frock.Routes.Domain.Model.Entities;
 using Backend_Frock.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
@@ -172,6 +173,30 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             b.Property(s => s.EndTime).IsRequired();
             b.Property(s => s.DayOfWeek).HasMaxLength(10);
         });
+        
+        // Reservas
+        builder.Entity<Reservation>().ToTable("Reservations");
+        builder.Entity<Reservation>().HasKey(r => r.Id);
+        builder.Entity<Reservation>().Property(r => r.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Reservation>().Property(r => r.Status).IsRequired().HasConversion<string>();
+
+        builder.Entity<Reservation>()
+            .HasOne(r => r.User)
+            .WithMany()
+            .HasForeignKey(r => r.UserId);
+
+        builder.Entity<ReservationRoute>().ToTable("ReservationRoutes");
+        builder.Entity<ReservationRoute>().HasKey(rr => new { rr.ReservationId, rr.RouteId });
+
+        builder.Entity<ReservationRoute>()
+            .HasOne(rr => rr.Reservation)
+            .WithMany(r => r.ReservationRoutes)
+            .HasForeignKey(rr => rr.ReservationId);
+
+        builder.Entity<ReservationRoute>()
+            .HasOne(rr => rr.Routes)
+            .WithMany()
+            .HasForeignKey(rr => rr.RouteId);
         
         builder.UseSnakeCaseNamingConvention();
     }

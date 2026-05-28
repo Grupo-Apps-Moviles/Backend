@@ -19,6 +19,13 @@ using Backend_Frock.IAM.Infrastructure.Tokens.JWT.Services;
 using Backend_Frock.IAM.Interfaces.ACL;
 using Backend_Frock.IAM.Interfaces.ACL.Services;
 
+// Reservations
+using Backend_Frock.Reservations.Application.Internal.CommandServices;
+using Backend_Frock.Reservations.Application.Internal.QueryServices;
+using Backend_Frock.Reservations.Domain.Repositories;
+using Backend_Frock.Reservations.Domain.Services;
+using Backend_Frock.Reservations.Infrastructure.Repositories;
+
 // Routes
 using Backend_Frock.Routes.Application.Internal.CommandServices;
 using Backend_Frock.Routes.Application.Internal.QueryServices;
@@ -220,6 +227,11 @@ builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
 builder.Services.AddScoped<ISubscriptionCommandService, SubscriptionCommandService>();
 builder.Services.AddScoped<ISubscriptionQueryService, SubscriptionQueryService>();
 
+//Reservations
+builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+builder.Services.AddScoped<IReservationCommandService, ReservationCommandService>();
+builder.Services.AddScoped<IReservationQueryService, ReservationQueryService>();
+
 //GEOSERVICE
 builder.Services.AddHttpClient<IGeoImportService, GeoImportService>(client =>
 {
@@ -289,8 +301,3 @@ app.MapControllers();
 
 app.Run();
 
-// Desarrollado por grupo de VS
-
-// Desarrollado Por Panda!!
-
-// "ConnectionStrings": { "DefaultConnection": "server=localhost;user=root;password=1234;database=frockdb" },
