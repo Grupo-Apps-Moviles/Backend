@@ -291,4 +291,6 @@ app.Run();
 
 // Desarrollado por grupo de VS
 
+// Desarrollado Por Panda!!
+
 // "ConnectionStrings": { "DefaultConnection": "server=localhost;user=root;password=1234;database=frockdb" },
