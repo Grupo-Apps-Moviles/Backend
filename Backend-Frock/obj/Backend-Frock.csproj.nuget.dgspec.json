@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\movilbackend\\Backend123\\Backend-Frock\\Backend-Frock.csproj": {}
+    "D:\\movilbackendprueba\\Backend123\\Backend-Frock\\Backend-Frock.csproj": {}
   },
   "projects": {
-    "D:\\movilbackend\\Backend123\\Backend-Frock\\Backend-Frock.csproj": {
+    "D:\\movilbackendprueba\\Backend123\\Backend-Frock\\Backend-Frock.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\movilbackend\\Backend123\\Backend-Frock\\Backend-Frock.csproj",
+        "projectUniqueName": "D:\\movilbackendprueba\\Backend123\\Backend-Frock\\Backend-Frock.csproj",
         "projectName": "Backend-Frock",
-        "projectPath": "D:\\movilbackend\\Backend123\\Backend-Frock\\Backend-Frock.csproj",
+        "projectPath": "D:\\movilbackendprueba\\Backend123\\Backend-Frock\\Backend-Frock.csproj",
         "packagesPath": "C:\\Users\\USUARIO\\.nuget\\packages\\",
-        "outputPath": "D:\\movilbackend\\Backend123\\Backend-Frock\\obj\\",
+        "outputPath": "D:\\movilbackendprueba\\Backend123\\Backend-Frock\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\USUARIO\\AppData\\Roaming\\NuGet\\NuGet.Config"
