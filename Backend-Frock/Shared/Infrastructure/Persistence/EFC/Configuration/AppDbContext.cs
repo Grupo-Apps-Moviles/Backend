@@ -184,7 +184,11 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             .HasOne(r => r.User)
             .WithMany()
             .HasForeignKey(r => r.UserId);
-
+        
+        builder.Entity<Reservation>()
+            .HasIndex(r => r.PaypalTransactionId)
+            .IsUnique();
+        
         builder.Entity<ReservationRoute>().ToTable("ReservationRoutes");
         builder.Entity<ReservationRoute>().HasKey(rr => new { rr.ReservationId, rr.RouteId });
 
