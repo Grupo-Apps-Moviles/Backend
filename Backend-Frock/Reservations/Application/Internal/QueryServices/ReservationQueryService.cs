@@ -23,4 +23,11 @@ public class ReservationQueryService : IReservationQueryService
     {
         return await _reservationRepository.FindByUserIdAsync(query.UserId);
     }
+    
+    public async Task<IEnumerable<Reservation>> Handle(GetReservationsByDriverIdQuery query)
+    {
+        return await _reservationRepository
+            .FindByDriverIdAsync(
+                query.DriverId);
+    }
 }
