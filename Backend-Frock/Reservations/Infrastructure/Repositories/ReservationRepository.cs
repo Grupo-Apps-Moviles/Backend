@@ -21,12 +21,19 @@ public class ReservationRepository : BaseRepository<Reservation>, IReservationRe
             .ToListAsync();
     }
     
-    // Sobrescribimos FindByIdAsync para incluir las rutas relacionadas
     public new async Task<Reservation?> FindByIdAsync(int id)
     {
         return await Context.Set<Reservation>()
             .Include(r => r.ReservationRoutes)
             .ThenInclude(rr => rr.Routes)
             .FirstOrDefaultAsync(r => r.Id == id);
+    }
+    
+    public async Task<IEnumerable<Reservation>>
+        FindByDriverIdAsync(int driverId)
+    {
+        return await Context.Set<Reservation>()
+            .Where(r => r.DriverId == driverId)
+            .ToListAsync();
     }
 }
