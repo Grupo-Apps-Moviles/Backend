@@ -19,7 +19,13 @@ public class ReservationCommandService : IReservationCommandService
 
     public async Task<Reservation?> Handle(CreateReservationCommand command)
     {
-        var reservation = new Reservation(command.UserId, command.RouteIds);
+        var reservation = new Reservation(
+            command.UserId,
+            command.RouteIds,
+            command.Amount,
+            command.PaypalTransactionId,
+            command.DriverId
+        );;
         
         try
         {
