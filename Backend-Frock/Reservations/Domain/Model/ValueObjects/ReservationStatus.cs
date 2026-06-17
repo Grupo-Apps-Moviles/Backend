@@ -2,7 +2,7 @@
 
 public enum ReservationStatus
 {
-    NoReservet,
-    Reserved,
+    PendingPayment,
+    Paid,
     Canceled
 }
