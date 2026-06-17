@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Backend_Frock.Reservations.Interfaces.REST;
 
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("api/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
 public class ReservationsController : ControllerBase
 {
@@ -55,5 +55,26 @@ public class ReservationsController : ControllerBase
 
         var reservationResources = reservations.Select(ReservationResourceFromEntityAssembler.ToResourceFromEntity);
         return Ok(reservationResources);
+    }
+    
+    [HttpGet("driver/{driverId}")]
+    public async Task<IActionResult>
+        GetReservationsByDriverId(
+            int driverId)
+    {
+        var query =
+            new GetReservationsByDriverIdQuery(
+                driverId);
+
+        var reservations =
+            await _reservationQueryService
+                .Handle(query);
+
+        var resources =
+            reservations.Select(
+                ReservationResourceFromEntityAssembler
+                    .ToResourceFromEntity);
+
+        return Ok(resources);
     }
 }
