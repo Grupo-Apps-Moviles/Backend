@@ -6,4 +6,5 @@ namespace Backend_Frock.Reservations.Domain.Repositories;
 public interface IReservationRepository : IBaseRepository<Reservation>
 {
     Task<IEnumerable<Reservation>> FindByUserIdAsync(int userId);
+    Task<IEnumerable<Reservation>> FindByDriverIdAsync(int driverId);
 }
