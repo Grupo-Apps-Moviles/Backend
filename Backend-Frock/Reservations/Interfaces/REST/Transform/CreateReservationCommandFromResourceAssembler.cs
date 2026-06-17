@@ -5,8 +5,16 @@ namespace Backend_Frock.Reservations.Interfaces.REST.Transform;
 
 public static class CreateReservationCommandFromResourceAssembler
 {
-    public static CreateReservationCommand ToCommandFromResource(CreateReservationResource resource)
+    public static CreateReservationCommand
+        ToCommandFromResource(
+            CreateReservationResource resource)
     {
-        return new CreateReservationCommand(resource.UserId, resource.RouteIds);
+        return new CreateReservationCommand(
+            resource.UserId,
+            resource.RouteIds,
+            resource.Amount,
+            resource.PaypalTransactionId,
+            resource.DriverId
+        );
     }
 }
