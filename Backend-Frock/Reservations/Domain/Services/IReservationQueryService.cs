@@ -7,4 +7,5 @@ public interface IReservationQueryService
 {
     Task<Reservation?> Handle(GetReservationByIdQuery query);
     Task<IEnumerable<Reservation>> Handle(GetAllReservationsByUserIdQuery query);
+    Task<IEnumerable<Reservation>> Handle(GetReservationsByDriverIdQuery query);
 }
