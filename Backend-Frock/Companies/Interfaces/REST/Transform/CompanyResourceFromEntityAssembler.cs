@@ -11,7 +11,8 @@ namespace Backend_Frock.Companies.Interfaces.REST.Transform
                 entity.Id,
                 entity.Name,
                 entity.LogoUrl,
-                entity.FkIdUser
+                entity.FkIdUser,
+                entity.InvitationCode
             );
     }
 }
