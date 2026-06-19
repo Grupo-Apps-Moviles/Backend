@@ -10,10 +10,10 @@ namespace Backend_Frock.Subscriptions.Infrastructure.Repositories;
 public class SubscriptionRepository(AppDbContext context)
     : BaseRepository<Subscription>(context), ISubscriptionRepository
 {
-    public Task<Subscription?> FindByDriverIdAsync(GetSubscriptionByDriverIdQuery query)
+    public Task<Subscription?> FindByCompanyIdAsync(GetSubscriptionByCompanyIdQuery query)
     {
         return Context.Set<Subscription>()
-            .FirstOrDefaultAsync(s => s.DriverId == query.DriverId);
+            .FirstOrDefaultAsync(s => s.CompanyId == query.CompanyId);
     }
  
     public Task<Subscription?> FindByPaypalIdAsync(GetSubscriptionByPaypalIdQuery query)

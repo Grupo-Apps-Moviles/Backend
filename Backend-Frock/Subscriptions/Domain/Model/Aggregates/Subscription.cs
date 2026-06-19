@@ -6,7 +6,7 @@ namespace Backend_Frock.Subscriptions.Domain.Model.Aggregates;
 public class Subscription
 {
     public int Id { get; private set; }
-    public int DriverId { get; private set; }
+    public int CompanyId { get; private set; }
     public string PaypalSubscriptionId { get; private set; } = string.Empty;
     public string PaypalPlanId { get; private set; } = string.Empty;
     public SubscriptionStatus Status { get; private set; }
@@ -23,7 +23,7 @@ public class Subscription
 
     public Subscription(CreateSubscriptionCommand command, string paypalSubscriptionId, string planId)
     {
-        DriverId = command.DriverId;
+        CompanyId = command.CompanyId;
         PaypalSubscriptionId = paypalSubscriptionId;
         PaypalPlanId = planId;
         Status = SubscriptionStatus.Pending;

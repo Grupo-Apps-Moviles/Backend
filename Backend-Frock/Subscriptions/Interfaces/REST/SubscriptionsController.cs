@@ -50,7 +50,7 @@ public class SubscriptionsController(
             return Unauthorized();
  
         var subscription = await queryService
-            .Handle(new GetSubscriptionByDriverIdQuery(driverId.Value));
+            .Handle(new GetSubscriptionByCompanyIdQuery(driverId.Value));
  
         if (subscription is null)
             return Ok(new SubscriptionStatusResource(false, "None", null));
@@ -71,7 +71,7 @@ public class SubscriptionsController(
             return Unauthorized();
  
         var sub = await queryService
-            .Handle(new GetSubscriptionByDriverIdQuery(driverId.Value));
+            .Handle(new GetSubscriptionByCompanyIdQuery(driverId.Value));
  
         if (sub is null || !sub.IsActive)
             return StatusCode(403, new { message = "Se requiere suscripción activa." });

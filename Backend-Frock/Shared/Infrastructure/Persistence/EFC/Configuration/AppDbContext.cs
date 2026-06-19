@@ -135,7 +135,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             b.ToTable("subscriptions");
             b.HasKey(s => s.Id);
             b.Property(s => s.Id).IsRequired().ValueGeneratedOnAdd();
-            b.Property(s => s.DriverId).IsRequired();
+            b.Property(s => s.CompanyId).IsRequired();
             b.Property(s => s.PaypalSubscriptionId).HasMaxLength(100).IsRequired();
             b.Property(s => s.PaypalPlanId).HasMaxLength(100).IsRequired();
             b.Property(s => s.Status).HasConversion<string>().IsRequired();

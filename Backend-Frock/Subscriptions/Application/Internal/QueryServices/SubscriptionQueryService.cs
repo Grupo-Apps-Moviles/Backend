@@ -8,15 +8,15 @@ namespace Backend_Frock.Subscriptions.Application.Internal.QueryServices;
 public class SubscriptionQueryService(ISubscriptionRepository subscriptionRepository)
     : ISubscriptionQueryService
 {
-    public async Task<Subscription?> Handle(GetSubscriptionByDriverIdQuery query)
+    public async Task<Subscription?> Handle(GetSubscriptionByCompanyIdQuery query)
     {
         try
         {
-            return await subscriptionRepository.FindByDriverIdAsync(query);
+            return await subscriptionRepository.FindByCompanyIdAsync(query);
         }
         catch (Exception e)
         {
-            throw new Exception($"Error retrieving subscription for driver: {e.Message}", e);
+            throw new Exception($"Error retrieving subscription for company: {e.Message}", e);
         }
     }
  
