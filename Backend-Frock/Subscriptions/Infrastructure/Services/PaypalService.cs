@@ -42,14 +42,14 @@ public class PaypalService(HttpClient httpClient, IOptions<PaypalOptions> option
     // ─── Crear suscripción ────────────────────────────────────────────────
 
     public async Task<(string approvalUrl, string subscriptionId, string planId)>
-        CreateSubscriptionAsync(int driverId)
+        CreateSubscriptionAsync(int companyId)
     {
         var token = await GetAccessTokenAsync();
 
         var body = new
         {
             plan_id = _options.PlanId,
-            custom_id = driverId.ToString(),
+            custom_id = companyId.ToString(),
             application_context = new
             {
                 brand_name = "WayPass",
