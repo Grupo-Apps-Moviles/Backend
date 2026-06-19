@@ -5,6 +5,7 @@ namespace Backend_Frock.Companies.Interfaces.REST.Resources
         int CompanyId, // The company the member belongs to
         string CompanyName, // The name of the company
         int UserId, // The IAM user behind this membership
+        string? Username, // The IAM username, enriched via the facade; null if unavailable
         string MemberRole, // Admin or Driver
         DateTime JoinedAt // When the user joined the company
         );

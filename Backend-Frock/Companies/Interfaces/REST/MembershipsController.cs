@@ -5,6 +5,7 @@ using Backend_Frock.Companies.Interfaces.REST.Resources;
 using Backend_Frock.Companies.Interfaces.REST.Transform;
 using Backend_Frock.IAM.Application.OutboundServices;
 using Backend_Frock.IAM.Infrastructure.Pipeline.Middleware.Attributes;
+using Backend_Frock.IAM.Interfaces.ACL;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net.Mime;
@@ -21,7 +22,8 @@ namespace Backend_Frock.Companies.Interfaces.REST
         ICompanyMembershipCommandService commandService,
         ICompanyMembershipQueryService queryService,
         ICompanyQueryService companyQueryService,
-        ITokenService tokenService) : ControllerBase
+        ITokenService tokenService,
+        IIamContextFacade iamContextFacade) : ControllerBase
     {
         // Lee el userId del JWT igual que SubscriptionsController.
         private async Task<int?> GetCurrentUserId()
@@ -115,8 +117,14 @@ namespace Backend_Frock.Companies.Interfaces.REST
             if (company is null) return NotFound(new { message = "Empresa no encontrada." });
 
             var members = await queryService.Handle(new GetMembersByCompanyIdQuery(companyId));
-            var resources = members.Select(m =>
-                MembershipResourceFromEntityAssembler.ToResourceFromEntity(m, company));
+            var resources = new List<MembershipResource>();
+            foreach (var member in members)
+            {
+                // Cross into IAM via the ACL facade to enrich the username (DDD-friendly).
+                var username = await iamContextFacade.FetchUsernameByUserId(member.UserId);
+                resources.Add(MembershipResourceFromEntityAssembler.ToResourceFromEntity(
+                    member, company, string.IsNullOrEmpty(username) ? null : username));
+            }
             return Ok(resources);
         }
 

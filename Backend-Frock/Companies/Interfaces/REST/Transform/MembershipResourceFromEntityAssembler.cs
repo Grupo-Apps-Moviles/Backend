@@ -5,12 +5,13 @@ namespace Backend_Frock.Companies.Interfaces.REST.Transform
 {
     public static class MembershipResourceFromEntityAssembler
     {
-        public static MembershipResource ToResourceFromEntity(CompanyMembership membership, Company company) =>
+        public static MembershipResource ToResourceFromEntity(CompanyMembership membership, Company company, string? username = null) =>
             new MembershipResource(
                 membership.Id,
                 membership.CompanyId,
                 company.Name,
                 membership.UserId,
+                username,
                 membership.MemberRole.ToString(),
                 membership.JoinedAt
             );
