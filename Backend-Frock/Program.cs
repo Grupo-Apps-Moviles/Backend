@@ -194,6 +194,9 @@ builder.Services.AddScoped<IIamContextFacade, IamContextFacade>();
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 builder.Services.AddScoped<ICompanyCommandService, CompanyCommandService>();
 builder.Services.AddScoped<ICompanyQueryService, CompanyQueryService>();
+builder.Services.AddScoped<ICompanyMembershipRepository, CompanyMembershipRepository>();
+builder.Services.AddScoped<ICompanyMembershipCommandService, CompanyMembershipCommandService>();
+builder.Services.AddScoped<ICompanyMembershipQueryService, CompanyMembershipQueryService>();
 
 //Geographic
 builder.Services.AddScoped<IRegionRepository, RegionRepository>();
