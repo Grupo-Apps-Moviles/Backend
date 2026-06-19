@@ -4,6 +4,8 @@ using Backend_Frock.Companies.Domain.Model.ValueObjects;
 using Backend_Frock.Companies.Domain.Repositories;
 using Backend_Frock.Companies.Domain.Services;
 using Backend_Frock.Shared.Domain.Repositories;
+using Backend_Frock.Subscriptions.Domain.Model.Queries;
+using Backend_Frock.Subscriptions.Domain.Service;
 
 namespace Backend_Frock.Companies.Application.Internal.CommandServices
 {
@@ -18,6 +20,7 @@ namespace Backend_Frock.Companies.Application.Internal.CommandServices
     public class CompanyMembershipCommandService(
         ICompanyMembershipRepository membershipRepository,
         ICompanyRepository companyRepository,
+        ISubscriptionQueryService subscriptionQueryService,
         IUnitOfWork unitOfWork) : ICompanyMembershipCommandService
     {
         public async Task<CompanyMembership?> Handle(JoinCompanyCommand command)
@@ -32,10 +35,16 @@ namespace Backend_Frock.Companies.Application.Internal.CommandServices
             if (existing is not null)
                 throw new InvalidOperationException("Ya perteneces a una empresa.");
 
-            // 3) FASE 3: activar validación de capacidad
-            // var max = await capacityService.GetMaxMembersAsync(company.Id); // default 1 sin suscripción
-            // var count = await membershipRepository.CountByCompanyIdAsync(company.Id);
-            // if (count >= max) throw new InvalidOperationException("La empresa alcanzó su límite de miembros.");
+            // 3) FASE 3: validación de capacidad según la suscripción de la compañía.
+            //    Tope efectivo: suscripción activa => MaxMembers; sino => 1 (free).
+            var subscription = await subscriptionQueryService
+                .Handle(new GetSubscriptionByCompanyIdQuery(company.Id));
+            var maxMembers = (subscription is { IsActive: true }) ? subscription.MaxMembers : 1;
+
+            var currentCount = await membershipRepository.CountByCompanyIdAsync(company.Id);
+            if (currentCount >= maxMembers)
+                throw new InvalidOperationException(
+                    "La empresa alcanzó su límite de miembros. Se requiere una suscripción activa para agregar más conductores.");
 
             // 4) Crear la membresía como Driver.
             var membership = new CompanyMembership(company.Id, command.UserId, MemberRole.Driver);
