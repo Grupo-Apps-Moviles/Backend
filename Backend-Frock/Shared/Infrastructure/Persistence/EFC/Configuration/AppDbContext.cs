@@ -139,6 +139,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             b.Property(s => s.PaypalSubscriptionId).HasMaxLength(100).IsRequired();
             b.Property(s => s.PaypalPlanId).HasMaxLength(100).IsRequired();
             b.Property(s => s.Status).HasConversion<string>().IsRequired();
+            b.Property(s => s.MaxMembers).IsRequired();
             b.Property(s => s.StartDate).IsRequired();
             b.Property(s => s.EndDate).IsRequired();
             b.Property(s => s.CreatedAt).IsRequired();
