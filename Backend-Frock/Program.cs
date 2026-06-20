@@ -19,6 +19,13 @@ using Backend_Frock.IAM.Infrastructure.Tokens.JWT.Services;
 using Backend_Frock.IAM.Interfaces.ACL;
 using Backend_Frock.IAM.Interfaces.ACL.Services;
 
+// Reservations
+using Backend_Frock.Reservations.Application.Internal.CommandServices;
+using Backend_Frock.Reservations.Application.Internal.QueryServices;
+using Backend_Frock.Reservations.Domain.Repositories;
+using Backend_Frock.Reservations.Domain.Services;
+using Backend_Frock.Reservations.Infrastructure.Repositories;
+
 // Routes
 using Backend_Frock.Routes.Application.Internal.CommandServices;
 using Backend_Frock.Routes.Application.Internal.QueryServices;
@@ -48,6 +55,15 @@ using Backend_Frock.Stops.Domain.Services.Geographic;
 using Backend_Frock.Stops.Infrastructure.Repositories;
 using Backend_Frock.Stops.Infrastructure.Repositories.Geographic;
 using Backend_Frock.Stops.Infrastructure.Seeding;
+
+// Subscriptions
+using Backend_Frock.Subscriptions.Application.Internal.CommandServices;
+using Backend_Frock.Subscriptions.Application.Internal.QueryServices;
+using Backend_Frock.Subscriptions.Domain.Model.Repository;
+using Backend_Frock.Subscriptions.Domain.Service;
+using Backend_Frock.Subscriptions.Infrastructure.Paypal;
+using Backend_Frock.Subscriptions.Infrastructure.Repositories;
+using Backend_Frock.Subscriptions.Infrastructure.Services;
 
 // Microsoft
 using Microsoft.EntityFrameworkCore;
@@ -178,6 +194,9 @@ builder.Services.AddScoped<IIamContextFacade, IamContextFacade>();
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 builder.Services.AddScoped<ICompanyCommandService, CompanyCommandService>();
 builder.Services.AddScoped<ICompanyQueryService, CompanyQueryService>();
+builder.Services.AddScoped<ICompanyMembershipRepository, CompanyMembershipRepository>();
+builder.Services.AddScoped<ICompanyMembershipCommandService, CompanyMembershipCommandService>();
+builder.Services.AddScoped<ICompanyMembershipQueryService, CompanyMembershipQueryService>();
 
 //Geographic
 builder.Services.AddScoped<IRegionRepository, RegionRepository>();
@@ -202,6 +221,19 @@ builder.Services.AddScoped<IStopQueryService, StopQueryService>();
 builder.Services.AddScoped<IRouteRepository, RouteRepository>();
 builder.Services.AddScoped<IRouteCommandService, RouteCommandService>();
 builder.Services.AddScoped<IRouteQueryService, RouteQueryService>();
+
+// Subscriptions
+builder.Services.Configure<PaypalOptions>(builder.Configuration.GetSection(PaypalOptions.SectionName));
+builder.Services.AddHttpClient<PaypalService>();
+builder.Services.AddScoped<IPaypalService, PaypalService>();
+builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+builder.Services.AddScoped<ISubscriptionCommandService, SubscriptionCommandService>();
+builder.Services.AddScoped<ISubscriptionQueryService, SubscriptionQueryService>();
+
+//Reservations
+builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+builder.Services.AddScoped<IReservationCommandService, ReservationCommandService>();
+builder.Services.AddScoped<IReservationQueryService, ReservationQueryService>();
 
 //GEOSERVICE
 builder.Services.AddHttpClient<IGeoImportService, GeoImportService>(client =>
@@ -253,8 +285,10 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Mueve estas líneas fuera de cualquier bloque "if (app.Environment.IsDevelopment())"
+
+// Configure the HTTP request pipeline.
 app.UseSwagger();
+
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
@@ -264,11 +298,9 @@ app.UseSwaggerUI(c =>
 //app.UseHttpsRedirection();
 app.UseRouting(); // Si no está implícito
 app.UseRequestAuthorization(); // Tu middleware personalizado
+app.UseAuthentication();
 app.UseAuthorization(); // Authorization de ASP.NET Core
 app.MapControllers();
 
 app.Run();
 
-// Desarrollado por grupo de VS
-
-// "ConnectionStrings": { "DefaultConnection": "server=localhost;user=root;password=1234;database=frockdb" },

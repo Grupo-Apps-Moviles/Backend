@@ -1,29 +1,27 @@
-```java
-{
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning"
-    }
-  },
-  "AllowedHosts": "*",
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=interchange.proxy.rlwy.net;Port=40175;Database=railway;Uid=root;Pwd=cygYyJTTgdGQLhoKyqgPbfAeguYxyNye;SslMode=Required;"
-  },
-  "TokenSettings": {
-    "Secret": "Place here your secret for token generation"
-  },
+# Documentación de Bounded Contexts - Backend de Apps Móviles
 
-  "Cloudinary": {
-    "CloudName": "dyv3r7pnw",
-    "ApiKey": "699651913171825",
-    "ApiSecret": "l7Z4AkM8nIw2sp7Eqs_4K3nXaQE"
-  },
+> **Repositorio:** [Grupo-Apps-Moviles/Backend](https://github.com/Grupo-Apps-Moviles/Backend.git)  
+> **Base de Datos:** MySQL  
+> **Enfoque de Diseño:** Domain-Driven Design (DDD)  
+> **Última actualización:** Mayo 2026
 
-  "GeoApi": {
-    "BaseUrl": "https://django-production-0960.up.railway.app/api/districts/"
-  }
-}
+---
 
+## 1. Visión General del Proyecto
 
-```
+Este repositorio contiene el **backend** de un sistema de aplicaciones móviles desarrollado siguiendo los principios de **Domain-Driven Design (DDD)**. La arquitectura está estructurada en **Bounded Contexts** para separar responsabilidades del dominio, mantener la coherencia de los datos y facilitar el escalabilidad del sistema.
+
+---
+
+## 2. Arquitectura del Sistema
+
+### 2.1 Stack Tecnológico
+
+| Componente | Tecnología |
+|------------|------------|
+| **Backend** | C# / ASP.NET Core |
+| **Base de Datos** | MySQL 8.0+ |
+| **ORM** | Entity Framework Core |
+| **Arquitectura** | Monolito |
+| **Enfoque de Diseño** | Domain-Drive Design |
+| **Patrones** | Repository, Unit of Work, CQRS |

@@ -1,10 +1,12 @@
 ﻿using Backend_Frock.Companies.Domain.Model.Aggregates;
 using Backend_Frock.IAM.Domain.Model.Aggregates;
+using Backend_Frock.Reservations.Domain.Model.Aggregates;
 using Backend_Frock.Routes.Domain.Model.Aggregates;
 using Backend_Frock.Routes.Domain.Model.Entities;
 using Backend_Frock.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
 using Backend_Frock.Stops.Domain.Model.Aggregates;
 using Backend_Frock.Stops.Domain.Model.Aggregates.Geographic;
+using Backend_Frock.Subscriptions.Domain.Model.Aggregates;
 using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +22,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
 {
     public DbSet<User> Users { get; set; }
     public DbSet<Company> Companies { get; set; }
+    public DbSet<CompanyMembership> CompanyMemberships { get; set; }
     public DbSet<Region> Regions { get; set; }
     public DbSet<Province> Provinces { get; set; }
     public DbSet<District> Districts { get; set; }
@@ -27,6 +30,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<RouteAggregate> Routes { get; set; }
     public DbSet<RoutesStops> RouteStops { get; set; }
     public DbSet<Schedule> Schedules { get; set; }
+    public DbSet<Subscription> Subscriptions { get; set; }
     
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
@@ -58,6 +62,21 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             .HasForeignKey<Company>(c => c.FkIdUser) // Specify the entity type explicitly
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
+        // Invitation code (NUEVO) - único por compañía
+        builder.Entity<Company>().Property(c => c.InvitationCode).HasMaxLength(12);
+        builder.Entity<Company>().HasIndex(c => c.InvitationCode).IsUnique();
+
+        // COMPANY MEMBERSHIP
+        builder.Entity<CompanyMembership>().HasKey(m => m.Id);
+        builder.Entity<CompanyMembership>().Property(m => m.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<CompanyMembership>().Property(m => m.CompanyId).IsRequired();
+        builder.Entity<CompanyMembership>().Property(m => m.UserId).IsRequired();
+        builder.Entity<CompanyMembership>().Property(m => m.MemberRole).IsRequired();
+        builder.Entity<CompanyMembership>().Property(m => m.JoinedAt).IsRequired();
+        // Un usuario solo puede tener una membresía
+        builder.Entity<CompanyMembership>().HasIndex(m => m.UserId).IsUnique();
+        // Evitar duplicado company+user
+        builder.Entity<CompanyMembership>().HasIndex(m => new { m.CompanyId, m.UserId }).IsUnique();
 
         //REGION
         builder.Entity<Region>().HasKey(f => f.Id);
@@ -110,6 +129,24 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
 
+        // SUBSCRIPTION
+        builder.Entity<Subscription>(b =>
+        {
+            b.ToTable("subscriptions");
+            b.HasKey(s => s.Id);
+            b.Property(s => s.Id).IsRequired().ValueGeneratedOnAdd();
+            b.Property(s => s.CompanyId).IsRequired();
+            b.Property(s => s.PaypalSubscriptionId).HasMaxLength(100).IsRequired();
+            b.Property(s => s.PaypalPlanId).HasMaxLength(100).IsRequired();
+            b.Property(s => s.Status).HasConversion<string>().IsRequired();
+            b.Property(s => s.MaxMembers).IsRequired();
+            b.Property(s => s.StartDate).IsRequired();
+            b.Property(s => s.EndDate).IsRequired();
+            b.Property(s => s.CreatedAt).IsRequired();
+            b.Property(s => s.UpdatedAt).IsRequired();
+            b.Ignore(s => s.IsActive); // computed, no va a la DB
+        });
+        
         // ROUTE
         builder.Entity<RouteAggregate>(b =>
             {
@@ -153,6 +190,34 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             b.Property(s => s.EndTime).IsRequired();
             b.Property(s => s.DayOfWeek).HasMaxLength(10);
         });
+        
+        // Reservas
+        builder.Entity<Reservation>().ToTable("Reservations");
+        builder.Entity<Reservation>().HasKey(r => r.Id);
+        builder.Entity<Reservation>().Property(r => r.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Reservation>().Property(r => r.Status).IsRequired().HasConversion<string>();
+
+        builder.Entity<Reservation>()
+            .HasOne(r => r.User)
+            .WithMany()
+            .HasForeignKey(r => r.UserId);
+        
+        builder.Entity<Reservation>()
+            .HasIndex(r => r.PaypalTransactionId)
+            .IsUnique();
+        
+        builder.Entity<ReservationRoute>().ToTable("ReservationRoutes");
+        builder.Entity<ReservationRoute>().HasKey(rr => new { rr.ReservationId, rr.RouteId });
+
+        builder.Entity<ReservationRoute>()
+            .HasOne(rr => rr.Reservation)
+            .WithMany(r => r.ReservationRoutes)
+            .HasForeignKey(rr => rr.ReservationId);
+
+        builder.Entity<ReservationRoute>()
+            .HasOne(rr => rr.Routes)
+            .WithMany()
+            .HasForeignKey(rr => rr.RouteId);
         
         builder.UseSnakeCaseNamingConvention();
     }

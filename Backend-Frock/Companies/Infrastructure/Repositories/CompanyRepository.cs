@@ -18,5 +18,10 @@ namespace Backend_Frock.Companies.Infrastructure.Repositories
         {
             return await context.Set<Company>().FirstOrDefaultAsync(c => c.FkIdUser == fkIdUser);
         }
+
+        public Task<Company?> FindByInvitationCodeAsync(string invitationCode)
+        {
+            return context.Set<Company>().FirstOrDefaultAsync(c => c.InvitationCode == invitationCode);
+        }
     }
 }

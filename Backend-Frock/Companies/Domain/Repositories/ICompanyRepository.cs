@@ -7,6 +7,7 @@ namespace Backend_Frock.Companies.Domain.Repositories
     public interface ICompanyRepository : IBaseRepository<Company>
     {
         Task<Company?> FindByNameAsync(string name);
-        Task<Company?> FindByFkIdUserAsync(int FkUserId);        
+        Task<Company?> FindByFkIdUserAsync(int FkUserId);
+        Task<Company?> FindByInvitationCodeAsync(string invitationCode);
     }
 }
