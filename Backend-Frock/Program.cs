@@ -5,6 +5,13 @@ using Backend_Frock.Companies.Domain.Repositories;
 using Backend_Frock.Companies.Domain.Services;
 using Backend_Frock.Companies.Infrastructure.Repositories;
 
+// Favorites
+using Backend_Frock.Favorites.Application.Internal.CommandServices;
+using Backend_Frock.Favorites.Application.Internal.QueryServices;
+using Backend_Frock.Favorites.Domain.Repositories;
+using Backend_Frock.Favorites.Domain.Services;
+using Backend_Frock.Favorites.Infrastructure.Repositories;
+
 // User
 using Backend_Frock.IAM.Application.CommandServices;
 using Backend_Frock.IAM.Application.OutboundServices;
@@ -234,6 +241,11 @@ builder.Services.AddScoped<ISubscriptionQueryService, SubscriptionQueryService>(
 builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 builder.Services.AddScoped<IReservationCommandService, ReservationCommandService>();
 builder.Services.AddScoped<IReservationQueryService, ReservationQueryService>();
+
+//Favorites
+builder.Services.AddScoped<IFavoriteRouteRepository, FavoriteRouteRepository>();
+builder.Services.AddScoped<IFavoriteRouteCommandService, FavoriteRouteCommandService>();
+builder.Services.AddScoped<IFavoriteRouteQueryService, FavoriteRouteQueryService>();
 
 //GEOSERVICE
 builder.Services.AddHttpClient<IGeoImportService, GeoImportService>(client =>

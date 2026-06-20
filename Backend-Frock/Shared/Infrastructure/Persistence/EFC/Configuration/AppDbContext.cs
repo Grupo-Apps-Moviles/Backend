@@ -1,4 +1,5 @@
 ﻿using Backend_Frock.Companies.Domain.Model.Aggregates;
+using Backend_Frock.Favorites.Domain.Model.Aggregates;
 using Backend_Frock.IAM.Domain.Model.Aggregates;
 using Backend_Frock.Reservations.Domain.Model.Aggregates;
 using Backend_Frock.Routes.Domain.Model.Aggregates;
@@ -224,6 +225,15 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             .WithMany()
             .HasForeignKey(rr => rr.RouteId);
         
+        // Favorites
+        builder.Entity<FavoriteRoute>().ToTable("FavoriteRoutes");
+        builder.Entity<FavoriteRoute>().HasKey(f => f.Id);
+        builder.Entity<FavoriteRoute>().Property(f => f.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<FavoriteRoute>().Property(f => f.PassengerId).IsRequired();
+        builder.Entity<FavoriteRoute>().Property(f => f.RouteId).IsRequired();
+        builder.Entity<FavoriteRoute>().Property(f => f.CreatedAt).IsRequired();
+        builder.Entity<FavoriteRoute>().HasIndex(f => new { f.PassengerId, f.RouteId }).IsUnique();
+
         builder.UseSnakeCaseNamingConvention();
     }
 }
