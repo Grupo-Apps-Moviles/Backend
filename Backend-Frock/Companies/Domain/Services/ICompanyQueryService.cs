@@ -12,6 +12,8 @@ namespace Backend_Frock.Companies.Domain.Services
         Task<Company?> Handle(GetCompanyByNameQuery query);
 
         Task<Company?> Handle(GetCompanyByFkIdUserQuery query);
-        
+
+        Task<Company?> Handle(GetCompanyByInvitationCodeQuery query);
+
     }
 }

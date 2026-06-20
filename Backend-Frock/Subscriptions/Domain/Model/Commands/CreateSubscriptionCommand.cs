@@ -1,3 +1,3 @@
 ﻿namespace Backend_Frock.Subscriptions.Domain.Model.Commands;
 
-public record CreateSubscriptionCommand(int DriverId);
+public record CreateSubscriptionCommand(int CompanyId);

@@ -1,12 +1,16 @@
 ﻿using Backend_Frock.Shared.Domain.Repositories;
 using Backend_Frock.Companies.Domain.Model.Aggregates;
 using Backend_Frock.Companies.Domain.Model.Commands;
+using Backend_Frock.Companies.Domain.Model.ValueObjects;
 using Backend_Frock.Companies.Domain.Repositories;
 using Backend_Frock.Companies.Domain.Services;
 
 namespace Backend_Frock.Companies.Application.Internal.CommandServices
 {
-    public class CompanyCommandService(ICompanyRepository companyRepository, IUnitOfWork unitOfWork) : ICompanyCommandService
+    public class CompanyCommandService(
+        ICompanyRepository companyRepository,
+        ICompanyMembershipRepository membershipRepository,
+        IUnitOfWork unitOfWork) : ICompanyCommandService
     {
         public async Task<Company?> Handle(CreateCompanyCommand command)
         {
@@ -19,7 +23,14 @@ namespace Backend_Frock.Companies.Application.Internal.CommandServices
             try
             {
                 await companyRepository.AddAsync(newCompany);
-                await unitOfWork.CompleteAsync();
+                await unitOfWork.CompleteAsync();          // 1er save -> company.Id poblado
+
+                // El creador queda como Admin de su propia compañía.
+                var adminMembership = new CompanyMembership(
+                    newCompany.Id, command.FkIdUser, MemberRole.Admin);
+                await membershipRepository.AddAsync(adminMembership);
+                await unitOfWork.CompleteAsync();          // 2do save
+
                 return newCompany;
             }
             catch (Exception e)

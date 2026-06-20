@@ -24,5 +24,10 @@ namespace Backend_Frock.Companies.Application.Internal.QueryServices
         {
             return await companyRepository.FindByFkIdUserAsync(query.FkIdUser);
         }
+
+        public async Task<Company?> Handle(GetCompanyByInvitationCodeQuery query)
+        {
+            return await companyRepository.FindByInvitationCodeAsync(query.InvitationCode);
+        }
     }
 }

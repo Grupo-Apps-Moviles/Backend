@@ -22,6 +22,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
 {
     public DbSet<User> Users { get; set; }
     public DbSet<Company> Companies { get; set; }
+    public DbSet<CompanyMembership> CompanyMemberships { get; set; }
     public DbSet<Region> Regions { get; set; }
     public DbSet<Province> Provinces { get; set; }
     public DbSet<District> Districts { get; set; }
@@ -61,6 +62,21 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             .HasForeignKey<Company>(c => c.FkIdUser) // Specify the entity type explicitly
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
+        // Invitation code (NUEVO) - único por compañía
+        builder.Entity<Company>().Property(c => c.InvitationCode).HasMaxLength(12);
+        builder.Entity<Company>().HasIndex(c => c.InvitationCode).IsUnique();
+
+        // COMPANY MEMBERSHIP
+        builder.Entity<CompanyMembership>().HasKey(m => m.Id);
+        builder.Entity<CompanyMembership>().Property(m => m.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<CompanyMembership>().Property(m => m.CompanyId).IsRequired();
+        builder.Entity<CompanyMembership>().Property(m => m.UserId).IsRequired();
+        builder.Entity<CompanyMembership>().Property(m => m.MemberRole).IsRequired();
+        builder.Entity<CompanyMembership>().Property(m => m.JoinedAt).IsRequired();
+        // Un usuario solo puede tener una membresía
+        builder.Entity<CompanyMembership>().HasIndex(m => m.UserId).IsUnique();
+        // Evitar duplicado company+user
+        builder.Entity<CompanyMembership>().HasIndex(m => new { m.CompanyId, m.UserId }).IsUnique();
 
         //REGION
         builder.Entity<Region>().HasKey(f => f.Id);
@@ -119,10 +135,11 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             b.ToTable("subscriptions");
             b.HasKey(s => s.Id);
             b.Property(s => s.Id).IsRequired().ValueGeneratedOnAdd();
-            b.Property(s => s.DriverId).IsRequired();
+            b.Property(s => s.CompanyId).IsRequired();
             b.Property(s => s.PaypalSubscriptionId).HasMaxLength(100).IsRequired();
             b.Property(s => s.PaypalPlanId).HasMaxLength(100).IsRequired();
             b.Property(s => s.Status).HasConversion<string>().IsRequired();
+            b.Property(s => s.MaxMembers).IsRequired();
             b.Property(s => s.StartDate).IsRequired();
             b.Property(s => s.EndDate).IsRequired();
             b.Property(s => s.CreatedAt).IsRequired();

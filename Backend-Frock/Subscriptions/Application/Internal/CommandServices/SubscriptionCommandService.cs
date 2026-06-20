@@ -15,7 +15,7 @@ public class SubscriptionCommandService(
     public async Task<string?> Handle(CreateSubscriptionCommand command)
     {
         var existing = await subscriptionRepository
-            .FindByDriverIdAsync(new GetSubscriptionByDriverIdQuery(command.DriverId));
+            .FindByCompanyIdAsync(new GetSubscriptionByCompanyIdQuery(command.CompanyId));
  
         if (existing is not null && existing.IsActive)
             return null;
@@ -24,7 +24,7 @@ public class SubscriptionCommandService(
         {
             // La tupla ahora coincide exactamente con IPaypalService
             var (approvalUrl, subscriptionId, planId) =
-                await paypalService.CreateSubscriptionAsync(command.DriverId);
+                await paypalService.CreateSubscriptionAsync(command.CompanyId);
  
             var subscription = new Subscription(command, subscriptionId, planId);
             await subscriptionRepository.AddAsync(subscription);
