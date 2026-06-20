@@ -272,16 +272,27 @@ using (var scope = app.Services.CreateScope())
     var context = services.GetRequiredService<AppDbContext>();
     context.Database.EnsureCreated();
 
-    // Seed initial geographic data
+    // Seed initial geographic data (idempotente; no detiene el arranque si falla).
+    // Si la API externa está dormida (cold start) y falla aquí, se puede reintentar
+    // sin reiniciar llamando a POST /api/geographic/seed.
     try
     {
         var seeder = services.GetRequiredService<GeographicDataSeeder>();
-        await seeder.SeedDataAsync();
+        var result = await seeder.SeedDataAsync();
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        if (result.AlreadySeeded)
+            logger.LogInformation("Datos geográficos ya presentes; no se reimportó.");
+        else
+            logger.LogInformation(
+                "Datos geográficos sembrados al arrancar: {Regions} regiones, {Provinces} provincias, {Districts} distritos.",
+                result.Regions, result.Provinces, result.Districts);
     }
     catch (Exception ex)
     {
         var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "Ocurrió un error durante la carga de datos iniciales.");
+        logger.LogError(ex,
+            "Ocurrió un error durante la carga de datos geográficos al arrancar. " +
+            "Puede reintentarse sin reiniciar con POST /api/geographic/seed.");
     }
 }
 

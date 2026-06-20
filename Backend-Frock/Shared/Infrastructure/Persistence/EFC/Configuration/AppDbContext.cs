@@ -81,12 +81,15 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         //REGION
         builder.Entity<Region>().HasKey(f => f.Id);
         builder.Entity<Region>().Property(f => f.Id)
-            .IsRequired(); // no se pone value generated on add porque eso lo maneja el seeder, son valores estaticos
+            .ValueGeneratedNever() // Id estático provisto por el seeder (CODIGO), no autogenerado por la BD.
+            .IsRequired();
         builder.Entity<Region>().Property(f => f.Name).IsRequired();
 
         //PROVINCE
         builder.Entity<Province>().HasKey(f => f.Id);
-        builder.Entity<Province>().Property(f => f.Id).IsRequired();
+        builder.Entity<Province>().Property(f => f.Id)
+            .ValueGeneratedNever() // Id estático provisto por el seeder (CODIGO), no autogenerado por la BD.
+            .IsRequired();
         builder.Entity<Province>().Property(f => f.Name).IsRequired();
         builder.Entity<Province>()
             .HasOne<Region>()
@@ -97,7 +100,9 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
 
         //DISTRICT
         builder.Entity<District>().HasKey(f => f.Id);
-        builder.Entity<District>().Property(f => f.Id).IsRequired();
+        builder.Entity<District>().Property(f => f.Id)
+            .ValueGeneratedNever() // Id estático provisto por el seeder (CODIGO), no autogenerado por la BD.
+            .IsRequired();
         builder.Entity<District>().Property(f => f.Name).IsRequired();
         builder.Entity<District>()
             .HasOne<Province>()
