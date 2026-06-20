@@ -1,0 +1,11 @@
+﻿using Backend_Frock.Shared.Domain.Repositories;
+using Backend_Frock.Subscriptions.Domain.Model.Aggregates;
+using Backend_Frock.Subscriptions.Domain.Model.Queries;
+
+namespace Backend_Frock.Subscriptions.Domain.Model.Repository;
+
+public interface ISubscriptionRepository : IBaseRepository<Subscription>
+{
+    Task<Subscription?> FindByCompanyIdAsync(GetSubscriptionByCompanyIdQuery query);
+    Task<Subscription?> FindByPaypalIdAsync(GetSubscriptionByPaypalIdQuery query);
+}

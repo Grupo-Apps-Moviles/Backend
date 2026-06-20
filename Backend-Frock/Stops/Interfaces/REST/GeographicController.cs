@@ -1,6 +1,7 @@
 ﻿using Backend_Frock.Stops.Domain.Model.Commands.Geographic;
 using Backend_Frock.Stops.Domain.Model.Queries.Geographic;
 using Backend_Frock.Stops.Domain.Services.Geographic;
+using Backend_Frock.Stops.Infrastructure.Seeding;
 using Backend_Frock.Stops.Interfaces.REST.Resources;
 using Backend_Frock.Stops.Interfaces.REST.Resources.Geographic;
 using Backend_Frock.Stops.Interfaces.REST.Transform.Geographic;
@@ -16,13 +17,50 @@ namespace Backend_Frock.Stops.Interfaces.REST
     [Route("api/[controller]")]
     [Produces(MediaTypeNames.Application.Json)]
     [Tags("Geographic")]
+    [SwaggerTag("Endpoints for manager Geographic (Región - Provincia - Distrito)")]
     public class GeographicController(
         IRegionCommandService regionCommandService, IRegionQueryService regionQueryService,
         IProvinceCommandService provinceCommandService, IProvinceQueryService provinceQueryService,
-        IDistrictCommandService districtCommandService, IDistrictQueryService districtQueryService
+        IDistrictCommandService districtCommandService, IDistrictQueryService districtQueryService,
+        GeographicDataSeeder geographicDataSeeder, ILogger<GeographicController> logger
         ) : ControllerBase
 
     {
+        // Endpoint manual para forzar la importación geográfica sin reiniciar el backend.
+        // Útil cuando el primer arranque coincide con la API externa dormida (cold start).
+        // Es idempotente: si las tablas ya tienen datos, no reimporta ni duplica.
+        [HttpPost("seed")]
+        [SwaggerOperation(
+            Summary = "Forces the geographic data import",
+            Description = "Imports regions, provinces and districts from the external API if the tables are empty. " +
+                          "Idempotent: does nothing if data already exists.",
+            OperationId = "SeedGeographicData")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Import result")]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, "The import failed")]
+        public async Task<IActionResult> SeedGeographicData()
+        {
+            try
+            {
+                var result = await geographicDataSeeder.SeedDataAsync();
+                if (result.AlreadySeeded)
+                    return Ok(new { seeded = false, message = "Los datos geográficos ya estaban cargados." });
+
+                return Ok(new
+                {
+                    seeded = true,
+                    regions = result.Regions,
+                    provinces = result.Provinces,
+                    districts = result.Districts
+                });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Falló la importación geográfica disparada manualmente.");
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new { seeded = false, error = "La importación geográfica falló. Revise los logs del servidor." });
+            }
+        }
+
         // Endpoints para Regions
         //getRegionById
         [HttpGet("regions/{id}")]

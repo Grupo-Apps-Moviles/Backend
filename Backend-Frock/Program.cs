@@ -5,6 +5,13 @@ using Backend_Frock.Companies.Domain.Repositories;
 using Backend_Frock.Companies.Domain.Services;
 using Backend_Frock.Companies.Infrastructure.Repositories;
 
+// Favorites
+using Backend_Frock.Favorites.Application.Internal.CommandServices;
+using Backend_Frock.Favorites.Application.Internal.QueryServices;
+using Backend_Frock.Favorites.Domain.Repositories;
+using Backend_Frock.Favorites.Domain.Services;
+using Backend_Frock.Favorites.Infrastructure.Repositories;
+
 // User
 using Backend_Frock.IAM.Application.CommandServices;
 using Backend_Frock.IAM.Application.OutboundServices;
@@ -18,6 +25,13 @@ using Backend_Frock.IAM.Infrastructure.Tokens.JWT.Configuration;
 using Backend_Frock.IAM.Infrastructure.Tokens.JWT.Services;
 using Backend_Frock.IAM.Interfaces.ACL;
 using Backend_Frock.IAM.Interfaces.ACL.Services;
+
+// Reservations
+using Backend_Frock.Reservations.Application.Internal.CommandServices;
+using Backend_Frock.Reservations.Application.Internal.QueryServices;
+using Backend_Frock.Reservations.Domain.Repositories;
+using Backend_Frock.Reservations.Domain.Services;
+using Backend_Frock.Reservations.Infrastructure.Repositories;
 
 // Routes
 using Backend_Frock.Routes.Application.Internal.CommandServices;
@@ -49,6 +63,15 @@ using Backend_Frock.Stops.Infrastructure.Repositories;
 using Backend_Frock.Stops.Infrastructure.Repositories.Geographic;
 using Backend_Frock.Stops.Infrastructure.Seeding;
 
+// Subscriptions
+using Backend_Frock.Subscriptions.Application.Internal.CommandServices;
+using Backend_Frock.Subscriptions.Application.Internal.QueryServices;
+using Backend_Frock.Subscriptions.Domain.Model.Repository;
+using Backend_Frock.Subscriptions.Domain.Service;
+using Backend_Frock.Subscriptions.Infrastructure.Paypal;
+using Backend_Frock.Subscriptions.Infrastructure.Repositories;
+using Backend_Frock.Subscriptions.Infrastructure.Services;
+
 // Microsoft
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -70,12 +93,13 @@ builder.Services.AddSwaggerGen(options =>
         new OpenApiInfo
         {
             Title = "ViaCore Backend Develop",
+
             Version = "v1",
-            Description = "Frock Backend API",
-            TermsOfService = new Uri("https://acme-learning.com/tos"),
+            Description = "Viacore Backend API",
+            TermsOfService = new Uri("https://github.com/velardesoft/"),
             Contact = new OpenApiContact
             {
-                Name = "Grupo de estudiantes de la universidad peruana de Ciencias Aplicadas",
+                Name = "Grupo de estudiantes de la universidad peruana de Ciencias Aplicadas del curso de Aplicaciones Para Dispositivos Móviles",
                 Email = "codydevops@gmail.com"
             },
             License = new OpenApiLicense
@@ -109,12 +133,36 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+// Obtener conexión del appsettings.json o de variables de entorno de Railway
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// Si estamos en Railway, construimos la cadena con variables internas para mayor velocidad
+if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("MYSQLHOST")))
+{
+    var host = Environment.GetEnvironmentVariable("MYSQLHOST");
+    var port = Environment.GetEnvironmentVariable("MYSQLPORT");
+    var user = Environment.GetEnvironmentVariable("MYSQLUSER");
+    var pass = Environment.GetEnvironmentVariable("MYSQLPASSWORD");
+    var db   = Environment.GetEnvironmentVariable("MYSQLDATABASE");
+
+    connectionString = $"Server={host};Port={port};Database={db};Uid={user};Pwd={pass};SslMode=Required;";
+}
 
 if (connectionString is null)
 {
     throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 }
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.UseMySQL(connectionString, mysqlOptions =>
+    {
+        mysqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(10),
+            errorNumbersToAdd: null);
+    });
+});
 
 // Configure Database Context and Logging Levels
 if (builder.Environment.IsDevelopment())
@@ -154,6 +202,9 @@ builder.Services.AddScoped<IIamContextFacade, IamContextFacade>();
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 builder.Services.AddScoped<ICompanyCommandService, CompanyCommandService>();
 builder.Services.AddScoped<ICompanyQueryService, CompanyQueryService>();
+builder.Services.AddScoped<ICompanyMembershipRepository, CompanyMembershipRepository>();
+builder.Services.AddScoped<ICompanyMembershipCommandService, CompanyMembershipCommandService>();
+builder.Services.AddScoped<ICompanyMembershipQueryService, CompanyMembershipQueryService>();
 
 //Geographic
 builder.Services.AddScoped<IRegionRepository, RegionRepository>();
@@ -179,6 +230,24 @@ builder.Services.AddScoped<IRouteRepository, RouteRepository>();
 builder.Services.AddScoped<IRouteCommandService, RouteCommandService>();
 builder.Services.AddScoped<IRouteQueryService, RouteQueryService>();
 
+// Subscriptions
+builder.Services.Configure<PaypalOptions>(builder.Configuration.GetSection(PaypalOptions.SectionName));
+builder.Services.AddHttpClient<PaypalService>();
+builder.Services.AddScoped<IPaypalService, PaypalService>();
+builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+builder.Services.AddScoped<ISubscriptionCommandService, SubscriptionCommandService>();
+builder.Services.AddScoped<ISubscriptionQueryService, SubscriptionQueryService>();
+
+//Reservations
+builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+builder.Services.AddScoped<IReservationCommandService, ReservationCommandService>();
+builder.Services.AddScoped<IReservationQueryService, ReservationQueryService>();
+
+//Favorites
+builder.Services.AddScoped<IFavoriteRouteRepository, FavoriteRouteRepository>();
+builder.Services.AddScoped<IFavoriteRouteCommandService, FavoriteRouteCommandService>();
+builder.Services.AddScoped<IFavoriteRouteQueryService, FavoriteRouteQueryService>();
+
 //GEOSERVICE
 builder.Services.AddHttpClient<IGeoImportService, GeoImportService>(client =>
 {
@@ -188,24 +257,18 @@ builder.Services.AddHttpClient<IGeoImportService, GeoImportService>(client =>
 // Datos iniciales fijos de datos geográficos
 builder.Services.AddScoped<GeographicDataSeeder>();
 
+// CORS - Configuración para permitir 
 
-//CORS
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins(
-                "http://localhost:5173",
-                "https://frock-frontend.vercel.app",
-                "https://frock-frontend-git-main-yassers.vercel.app",
-                "https://frock-backend-monolito.onrender.com"
-            )
+        policy.AllowAnyOrigin() // Permite cualquier puerto y cualquier IP
             .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
+            .AllowAnyMethod();
+        // IMPORTANTE: No uses .AllowCredentials() aquí, o el navegador dará error de seguridad.
     });
 });
-;
 
 // Cloudinary Configuration
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
@@ -222,34 +285,46 @@ using (var scope = app.Services.CreateScope())
     var context = services.GetRequiredService<AppDbContext>();
     context.Database.EnsureCreated();
 
-    // Seed initial geographic data
+    // Seed initial geographic data (idempotente; no detiene el arranque si falla).
+    // Si la API externa está dormida (cold start) y falla aquí, se puede reintentar
+    // sin reiniciar llamando a POST /api/geographic/seed.
     try
     {
         var seeder = services.GetRequiredService<GeographicDataSeeder>();
-        await seeder.SeedDataAsync();
+        var result = await seeder.SeedDataAsync();
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        if (result.AlreadySeeded)
+            logger.LogInformation("Datos geográficos ya presentes; no se reimportó.");
+        else
+            logger.LogInformation(
+                "Datos geográficos sembrados al arrancar: {Regions} regiones, {Provinces} provincias, {Districts} distritos.",
+                result.Regions, result.Provinces, result.Districts);
     }
     catch (Exception ex)
     {
         var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "Ocurrió un error durante la carga de datos iniciales.");
+        logger.LogError(ex,
+            "Ocurrió un error durante la carga de datos geográficos al arrancar. " +
+            "Puede reintentarse sin reiniciar con POST /api/geographic/seed.");
     }
 }
 
+
+// Configure the HTTP request pipeline.
 app.UseSwagger();
 
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
-    c.RoutePrefix = string.Empty; // Opcional: para que Swagger sea la p�gina ra�z
-    c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+    c.RoutePrefix = string.Empty; // Esto hace que Swagger sea la página principal en Railway
 });
 
 //app.UseHttpsRedirection();
 app.UseRouting(); // Si no está implícito
 app.UseRequestAuthorization(); // Tu middleware personalizado
+app.UseAuthentication();
 app.UseAuthorization(); // Authorization de ASP.NET Core
 app.MapControllers();
 
 app.Run();
 
-// Desarrollado por grupo de VS
