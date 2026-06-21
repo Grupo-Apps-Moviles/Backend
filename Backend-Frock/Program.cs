@@ -93,7 +93,6 @@ builder.Services.AddSwaggerGen(options =>
         new OpenApiInfo
         {
             Title = "ViaCore Backend Develop",
-
             Version = "v1",
             Description = "Viacore Backend API",
             TermsOfService = new Uri("https://github.com/velardesoft/"),
@@ -254,19 +253,16 @@ builder.Services.AddHttpClient<IGeoImportService, GeoImportService>(client =>
     client.BaseAddress = new Uri(builder.Configuration["GeoApi:BaseUrl"]);
 });
 //Seeding Service Geographic Data
-// Datos iniciales fijos de datos geográficos
 builder.Services.AddScoped<GeographicDataSeeder>();
 
 // CORS - Configuración para permitir 
-
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.AllowAnyOrigin() // Permite cualquier puerto y cualquier IP
+        policy.AllowAnyOrigin() 
             .AllowAnyHeader()
             .AllowAnyMethod();
-        // IMPORTANTE: No uses .AllowCredentials() aquí, o el navegador dará error de seguridad.
     });
 });
 
@@ -283,16 +279,17 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<AppDbContext>();
+    
+    // Crea la base de datos y estructuras iniciales si no existen
     context.Database.EnsureCreated();
 
-    // Seed initial geographic data (idempotente; no detiene el arranque si falla).
-    // Si la API externa está dormida (cold start) y falla aquí, se puede reintentar
-    // sin reiniciar llamando a POST /api/geographic/seed.
+    var logger = services.GetRequiredService<ILogger<Program>>();
+
     try
     {
         var seeder = services.GetRequiredService<GeographicDataSeeder>();
         var result = await seeder.SeedDataAsync();
-        var logger = services.GetRequiredService<ILogger<Program>>();
+        
         if (result.AlreadySeeded)
             logger.LogInformation("Datos geográficos ya presentes; no se reimportó.");
         else
@@ -302,13 +299,24 @@ using (var scope = app.Services.CreateScope())
     }
     catch (Exception ex)
     {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex,
-            "Ocurrió un error durante la carga de datos geográficos al arrancar. " +
-            "Puede reintentarse sin reiniciar con POST /api/geographic/seed.");
+        logger.LogError(ex, "Ocurrió un error en la carga de datos geográficos. Limpiando tablas dañadas para reiniciar limpio...");
+
+        // Si la carga falló a la mitad, eliminamos ÚNICAMENTE las tablas de geografía.
+        // Respetamos el orden jerárquico inverso por restricciones de clave foránea (FK).
+        try 
+        {
+            context.Database.ExecuteSqlRaw("DROP TABLE IF EXISTS districts;");
+            context.Database.ExecuteSqlRaw("DROP TABLE IF EXISTS provinces;");
+            context.Database.ExecuteSqlRaw("DROP TABLE IF EXISTS regions;");
+            
+            logger.LogWarning("Tablas de geografía limpiadas con éxito. Realiza un 'Restart Service' en Render para reintentar desde cero.");
+        }
+        catch (Exception dropEx)
+        {
+            logger.LogCritical(dropEx, "No se pudieron limpiar las tablas geográficas de forma automática.");
+        }
     }
 }
-
 
 // Configure the HTTP request pipeline.
 app.UseSwagger();
@@ -316,15 +324,13 @@ app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
-    c.RoutePrefix = string.Empty; // Esto hace que Swagger sea la página principal en Railway
+    c.RoutePrefix = string.Empty; // Swagger en la página raíz
 });
 
-//app.UseHttpsRedirection();
-app.UseRouting(); // Si no está implícito
-app.UseRequestAuthorization(); // Tu middleware personalizado
+app.UseRouting(); 
+app.UseRequestAuthorization(); 
 app.UseAuthentication();
-app.UseAuthorization(); // Authorization de ASP.NET Core
+app.UseAuthorization(); 
 app.MapControllers();
 
 app.Run();
-
