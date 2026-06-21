@@ -280,41 +280,30 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<AppDbContext>();
     
-    // Crea la base de datos y estructuras iniciales si no existen
+    // Crea la base de datos y estructuras iniciales si no existen (No borra nada)
     context.Database.EnsureCreated();
 
     var logger = services.GetRequiredService<ILogger<Program>>();
 
     try
     {
+        logger.LogInformation("Iniciando verificación/carga incremental de datos geográficos...");
+        
         var seeder = services.GetRequiredService<GeographicDataSeeder>();
+        
+        // Ejecutamos el seeder directamente. Tu clase interna se encargará de validar 
+        // elemento por elemento para omitir los existentes y agregar los nuevos.
         var result = await seeder.SeedDataAsync();
         
-        if (result.AlreadySeeded)
-            logger.LogInformation("Datos geográficos ya presentes; no se reimportó.");
-        else
-            logger.LogInformation(
-                "Datos geográficos sembrados al arrancar: {Regions} regiones, {Provinces} provincias, {Districts} distritos.",
-                result.Regions, result.Provinces, result.Districts);
+        logger.LogInformation(
+            "Proceso geográfico finalizado. Estado actual: {Regions} regiones, {Provinces} provincias, {Districts} distritos en base de datos.",
+            result.Regions, result.Provinces, result.Districts);
     }
     catch (Exception ex)
     {
-        logger.LogError(ex, "Ocurrió un error en la carga de datos geográficos. Limpiando tablas dañadas para reiniciar limpio...");
-
-        // Si la carga falló a la mitad, eliminamos ÚNICAMENTE las tablas de geografía.
-        // Respetamos el orden jerárquico inverso por restricciones de clave foránea (FK).
-        try 
-        {
-            context.Database.ExecuteSqlRaw("DROP TABLE IF EXISTS districts;");
-            context.Database.ExecuteSqlRaw("DROP TABLE IF EXISTS provinces;");
-            context.Database.ExecuteSqlRaw("DROP TABLE IF EXISTS regions;");
-            
-            logger.LogWarning("Tablas de geografía limpiadas con éxito. Realiza un 'Restart Service' en Render para reintentar desde cero.");
-        }
-        catch (Exception dropEx)
-        {
-            logger.LogCritical(dropEx, "No se pudieron limpiar las tablas geográficas de forma automática.");
-        }
+        logger.LogError(ex, 
+            "La API externa falló o se cortó a mitad de la carga. " +
+            "Los datos cargados se mantienen intactos. Realiza un 'Restart Service' en Render para cargar el siguiente bloque.");
     }
 }
 
